@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livraria Secreta - Páginas do Amanhã</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1b4b;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #c084fc;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 1.1em;
+        }
+        .filtros {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .filter-btn {
+            background-color: #312e81;
+            color: #e2e8f0;
+            border: 1px solid #4f46e5;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .livros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .livro-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .livro-card h3 {
+            color: #f43f5e;
+            margin-top: 0;
+        }
+        .autor {
+            font-size: 0.9em;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .sinopse {
+            font-size: 0.95em;
+            color: #e2e8f0;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .genero-tag {
+            display: inline-block;
+            background-color: #831843;
+            color: #fbcfe8;
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+        .avaliacoes {
+            display: flex;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .star {
+            color: #475569;
+            transition: color 0.2s;
+        }
+        .star.checked {
+            color: #fbbf24;
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 0.85em;
+            color: #64748b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📚 Páginas do Amanhã</h1>
+        <p class="subtitle">Uma livraria independente perdida entre o romance e as estrelas.</p>
+    </header>
+
+    <div class="filtros">
+        <button class="filter-btn active" onclick="filtrarLivros('todos')">Todos</button>
+        <button class="filter-btn" onclick="filtrarLivros('Romance')">Romance</button>
+        <button class="filter-btn" onclick="filtrarLivros('Ficção Científica')">Ficção Científica</button>
+    </div>
+
+    <div class="livros-grid" id="gridLivros">
+        <!-- Preenchido via JavaScript -->
+    </div>
+
+    <footer>
+        <p>&copy; 2026 - Livraria Fictícia Páginas do Amanhã</p>
+    </footer>
+
+    <script>
+        const livros = [
+            {
+                id: 1,
+                titulo: "O Último Verão em Órion",
+                autor: "Clara Vance",
+                genero: "Romance",
+                sinopse: "Dois cientistas encontram-se numa estação espacial isolada e descobrem que as leis da física não são páreo para a gravidade de um amor inesperado.",
+                estrelas: 4
+            },
+            {
+                id: 2,
+                titulo: "Crónicas do Tempo Perdido",
+                autor: "Martim Torres",
+                genero: "Ficção Científica",
+                sinopse: "Quando um relojoeiro descobre como parar os segundos, percebe que cada minuto congelado tem um custo impensável para a realidade.",
+                estrelas: 5
+            },
+            {
+                id: 3,
+                titulo: "Café com Sabor a Infinito",
+                autor: "Beatriz Lima",
+                genero: "Romance",
+                sinopse: "Numa cafeteira onde o café é servido com memórias do futuro, dois estranhos reencontram-se todas as terças-feiras.",
+                estrelas: 4
+            },
+            {
+                id: 4,
+                titulo: "Código Silencioso",
+                autor: "Noah Vega",
+                genero: "Ficção Científica",
+                sinopse: "Uma inteligência artificial criada para proteger a Terra começa a escrever cartas de poesia enigmáticas para a humanidade.",
+                estrelas: 3
+            }
+        ];
+
+        function renderizarLivros(filtro = 'todos') {
+            const grid = document.getElementById('gridLivros');
+            grid.innerHTML = "";
+
+            const livrosFiltrados = filtro === 'todos' 
+                ? livros 
+                : livros.filter(l => l.genero === filtro);
+
+            livrosFiltrados.forEach(livro => {
+                const card = document.createElement('div');
+                card.className = 'livro-card';
+                
+                let estrelasHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    const classe = i <= livro.estrelas ? 'star checked' : 'star';
+                    estrelasHTML += `<span class="${classe}" onclick="avaliarLivro(${livro.id}, ${i})">★</span>`;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <span class="genero-tag">${livro.genero}</span>
+                        <h3>${livro.titulo}</h3>
+                        <div class="autor">por ${livro.autor}</div>
+                        <p class="sinopse">${livro.sinopse}</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85em; color: #94a3b8; margin-bottom: 5px;">Avaliação dos leitores:</div>
+                        <div class="avaliacoes">${estrelasHTML}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filtrarLivros(genero) {
+            // Atualizar botões ativos
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderizarLivros(genero);
+        }
+
+        function avaliarLivro(id, novaNota) {
+            const livro = livros.find(l => l.id === id);
+            if (livro) {
+                livro.estrelas = novaNota;
+                renderizarLivros(document.querySelector('.filter-btn.active').innerText.includes('Romance') ? 'Romance' : 
+                                 document.querySelector('.filter-btn.active').innerText.includes('Ficção') ? 'Ficção Científica' : 'todos');
+            }
+        }
+
+        // Carregar todos inicialmente
+        renderizarLivros();
+    </script>
+
+</body>
+</html>
